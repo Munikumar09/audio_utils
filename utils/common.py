@@ -16,6 +16,20 @@ def create_dir(dir_path:Union[str,Path],parents:bool=False):
     if not dir_path.exists():
         dir_path.mkdir(parents=parents,exist_ok=True)
 
+def remove_dir(dir_name: Union[str, Path]):
+    """
+    Delete an existing directory
+
+    Parameters
+    ----------
+    dir_name: ``str``
+        Directory name to be deleted
+    """
+    if isinstance(dir_name, str):
+        dir_name = Path(dir_name)
+
+    if dir_name.exists():
+        shutil.rmtree(dir_name)
 
 def delete_pycache_dirs(root_dir):
     for dir_name, subdirs, files in os.walk(root_dir):

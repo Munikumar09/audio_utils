@@ -1,21 +1,33 @@
 import os
+import sys
+sys.path.append("..")
+from utils.common import create_dir
 from pathlib import Path
 
 def download_file(url,save_path):
-    file_name=url.split("/")[-1]
-    absolute_file_path=Path(save_path)/file_name
-    if absolute_file_path.exists():
-        print(f"{file_name} already exists at {save_path}")
+    url_path=Path(url)
+    file_save_path=Path(save_path)/url_path.parent.name/url_path.name
+    print(file_save_path.parent)
+    create_dir(file_save_path.parent,parents=True)
+    if file_save_path.exists():
+        print(f"{file_save_path} already exists at {save_path}")
         return
-    os.system(f"wget -P {save_path} {url}")
+    os.system(f"wget -P {str(file_save_path.parent)} {url}")
 if __name__=="__main__":
-    download_links=["https://storage.googleapis.com/test_public_bucket/external/labelled/Hindi_IITM_hindi_dev_09-08-2021_17-31.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/Hindi_IITM_hindi_eval_10-08-2021_05-29.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/Hindi_IITM_hindi_train_09-08-2021_17-16.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/IITM_ASR_TTS_Female_hi_28-07-2021_13-33.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/IITM_ASR_TTS_Male_hi_28-07-2021_14-10.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/Hindi_Hindi_Interspeech_Task1_Valid_lab_18-08-2021_04-42.zip",
-"https://storage.googleapis.com/test_public_bucket/external/labelled/Hindi_Hindi_Interspeech_Task1_Train_lab_18-08-2021_04-43.zip",]
-    save_path="/media/dataset-harddisk/munikumar/hindi_dataset/benchmarks/ekstep/extra"
+    download_links=["https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/kathbath.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/kathbath.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/kathbath_noisy.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/kathbath_noisy.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/commonvoice.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/commonvoice.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/fleurs.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/fleurs.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/indictts.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/indictts.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/mucs.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/mucs.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar/gramvaani.zip",
+"https://objectstore.e2enetworks.net/indic-asr-public/indicwhisper/vistaar_benchmarks/gramvaani.zip"]
+    save_path="/media/dataset-harddisk/munikumar/hindi_dataset/vistaar"
     for link in download_links:
         download_file(link,save_path)

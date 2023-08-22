@@ -1,6 +1,6 @@
 from typing import Tuple
 import re
-_HINDI_LANGUAGE_RE_PATTERN = r"[^\u0901-\u0903\u0905-\u090b\u090f-\u0911\u0913-\u0928\u092a-\u0930\u0932-\u0933\u0935-\u0939\u093c\u093e-\u0943\u0945\u0947-\u0949\u094b-\u094d\s]"
+_HINDI_LANGUAGE_RE_PATTERN = r"[^\u0901-\u0903\u0905-\u090b\u090f-\u0911\u0913-\u0928\u092a-\u0930\u0932-\u0933\u0935-\u0939\u093c\u093e-\u0943\u0945\u0947-\u0949\u094b-\u094d\u0958-\u095e\s]"
 
 def clean_and_verify_transcript_hi(transcription: str) -> Tuple[str, bool]:
     """
@@ -19,6 +19,8 @@ def clean_and_verify_transcript_hi(transcription: str) -> Tuple[str, bool]:
     check: ``bool``
         Describes whether the transcription is valid or not
     """
+    transcription=re.sub(r"#[\w]*|<[\w]*>|'","",transcription)
+    
 
     # Replacing one or more consecutive zero_width spaces or normal spaces to a single space
     transcription = re.sub(r"[\u200b\s]+", " ", transcription)
