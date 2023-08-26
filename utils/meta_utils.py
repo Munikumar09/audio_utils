@@ -18,12 +18,10 @@ def add_audio_length(audio_length1:str,audio_length2:str):
     audio_length2=convert_to_time(audio_length2)
     
     total_length=[float(a)+float(b) for a,b in zip(audio_length1.split(":"),audio_length2.split(":"))]
-    print(total_length)
     time_format=[]
     carry=0
     for time in reversed(total_length[1:]):
         total_time=time+carry
-        print(total_time)
         time_format.insert(0,total_time%60)
         carry=total_time//60
     hrs=total_length[0]+carry

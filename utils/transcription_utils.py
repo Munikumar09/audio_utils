@@ -5,21 +5,11 @@ from utils.audio_utils import get_audio_info
 from collections import Counter
 from tqdm import tqdm
 import json
-_HINDI_NUKTAS_RE_PATTERN=r"[\u0929\u0931\u0958-\u095e]"
-_NUKTA_SYMBOL="\u093c"
+import string
+from indicnlp.normalize.indic_normalize import IndicNormalizerFactory
 
 _HINDI_LANGUAGE_RE_PATTERN = r"[^\u0901-\u0903\u0905-\u090b\u090f-\u0911\u0913-\u0928\u092a-\u0930\u0932-\u0933\u0935-\u0939\u093c\u093e-\u0943\u0945\u0947-\u0949\u094b-\u094d\s]"
-hindi_nuktas_decompose={
-    "क़": "क" + _NUKTA_SYMBOL,
-    "ख़": "ख" + _NUKTA_SYMBOL,
-    "ग़": "ग" + _NUKTA_SYMBOL,
-    "ज़": "ज" + _NUKTA_SYMBOL,
-    "ड़": "ड" + _NUKTA_SYMBOL,
-    "ढ़": "ढ" + _NUKTA_SYMBOL,
-    "फ़": "फ" + _NUKTA_SYMBOL,
-    "ऱ": "र" + _NUKTA_SYMBOL,
-    "य़": "य" + _NUKTA_SYMBOL,
-}
+
 
 def clean_and_verify_transcript_hi(transcription: str) -> Tuple[str, bool]:
     """
@@ -38,8 +28,19 @@ def clean_and_verify_transcript_hi(transcription: str) -> Tuple[str, bool]:
     check: ``bool``
         Describes whether the transcription is valid or not
     """
-    transcription = re.sub(r"#[\w]*|<[\w]*>", "", transcription)
-    # transcription=re.sub(_HINDI_NUKTAS_RE_PATTERN,lambda x: hindi_nuktas_decompose[x.group(0)],transcription)
+    # For gramavaani
+    transcription = re.sub(r"#[a-zA-Z]*|<[a-zA-Z]*>", "", transcription)
+
+    # Normalizing the hindi characters like decomposing Nuktas into composite characters.
+    # For example, `ज़` = 'ज' + '़'
+  
+        # Removing all the punctuations
+    punctuations = string.punctuation + "।₹”"
+    transcription = transcription.translate(str.maketrans(punctuations, " " * len(punctuations)))
+
+    factory = IndicNormalizerFactory()
+    normalizer = factory.get_normalizer("hi")
+    transcription = normalizer.normalize(transcription)
 
     # Replacing one or more consecutive zero_width spaces or normal spaces to a single space
     transcription = re.sub(r"[\u200b\s]+", " ", transcription)
