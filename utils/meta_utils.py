@@ -86,3 +86,11 @@ def merge_json_files(file1_path,file2_path):
     merge_data["empty_transcription"]= {}
     merge_data["ekstep"]=merge_data["total_count"]
     return dict(merge_data)
+
+def get_avg_bitrate(data):
+    if isinstance(data,str):
+        data=load_json(data)
+    bitrate=0
+    for audio_info in data:
+        bitrate+=int(audio_info["bit_rate"].split(" ")[0])
+    return f"{bitrate/len(data)} kb/s"

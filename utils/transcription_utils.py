@@ -1,6 +1,6 @@
 from typing import Tuple
 import re
-from utils.file_utils import save_json
+from utils.file_utils import save_json,load_json
 from utils.audio_utils import get_audio_info
 from collections import Counter
 from tqdm import tqdm
@@ -28,27 +28,23 @@ def clean_and_verify_transcript_hi(transcription: str) -> Tuple[str, bool]:
     check: ``bool``
         Describes whether the transcription is valid or not
     """
-    # For gramavaani
-    transcription = re.sub(r"#[a-zA-Z]*|<[a-zA-Z]*>", "", transcription)
-
     # Normalizing the hindi characters like decomposing Nuktas into composite characters.
     # For example, `ज़` = 'ज' + '़'
-  
-        # Removing all the punctuations
-    punctuations = string.punctuation + "।₹”"
-    transcription = transcription.translate(str.maketrans(punctuations, " " * len(punctuations)))
-
     factory = IndicNormalizerFactory()
     normalizer = factory.get_normalizer("hi")
     transcription = normalizer.normalize(transcription)
 
-    # Replacing one or more consecutive zero_width spaces or normal spaces to a single space
+    # Removing all the punctuations
+    punctuations = string.punctuation + "।₹"
+    transcription = transcription.translate(str.maketrans(punctuations, " " * len(punctuations)))
+
+    # Replacing one or more consecutive zero_width spaces or normal spaces to a single space.
     transcription = re.sub(r"[\u200b\s]+", " ", transcription)
 
-    # Searching for non hindi characters by using unicode's of hindi language
+    # Searching for non hindi characters by using unicode's of hindi language.
     check = re.findall(_HINDI_LANGUAGE_RE_PATTERN, transcription)
 
-    return transcription, check
+    return transcription.strip(), check
 
 
 def get_transcription_info(transcription_data, audio_path, save_path, split_type):
@@ -181,8 +177,12 @@ def get_total_stats(dataset_dir):
     train_file=dataset_dir/"train_non_hindi_transcripts.json"
     dev_file=dataset_dir/"dev_non_hindi_transcripts.json"
     test_file=dataset_dir/"test_non_hindi_transcripts.json"
+    dev_stats=[0,0,0,0]
+    if dev_file.exists():
+        dev_stats=load_json_data(dev_file)
+        
     train_stats=load_json_data(train_file)
-    dev_stats=load_json_data(dev_file)
+    
     test_stats=load_json_data(test_file)
     total_stats=[train_stats,dev_stats,test_stats]
     new_stats=[sum(column) for column in zip(*total_stats)]
@@ -191,5 +191,8 @@ def get_total_stats(dataset_dir):
     print("*"*50)
     get_data_loss(new_stats[0],new_stats[1],new_stats[2],new_stats[3],)
         
-    
-    
+def get_empty_transcription(transcription_path):
+    data=load_json(transcription_path)
+    if len(data)==0 or "text" not in data or data["text"]=="" or len(data['text'])==0:
+        return False
+    return True

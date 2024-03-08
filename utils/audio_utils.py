@@ -15,6 +15,7 @@ def get_audio_info(audio_file):
     out, _ = p.communicate()
 
     audio_info = json.loads(out)
+    # print(f"audio info : {audio_info}")
     sample_fmt = audio_info['streams'][0]['sample_fmt']
     bit_depth=0
     if sample_fmt == 'fltp':
@@ -38,6 +39,12 @@ def get_audio_info(audio_file):
     "bit_rate": bit_rate
     }
     return audio_data
+def get_total_audio_info(folder_dir):
+    audio_info=[]
+    for file in tqdm(list(Path(folder_dir).glob("*"))):
+        info=get_audio_info(str(file))
+        audio_info.append(info)
+    return audio_info
 def get_duration_ffprobe(file_path):
     cmd = ['ffprobe', '-v', 'error', '-show_entries', 
         'format=duration', str(file_path)]
@@ -54,7 +61,7 @@ def get_duration_mutagen(file_path:Union[str,Path])->float:
 def get_total_audio_duration(audio_path:Union[str,Path,List[str]],format:str="wav")->Dict[str,float]:
     if not isinstance(audio_path,list):
         audio_path=resolve_path(audio_path)
-        audio_path=list(Path(audio_path).glob(f"*.{format}"))
+        audio_path=list(Path(audio_path).rglob(f"*.{format}"))
     total_duration=0
     min_duration=1e10
     max_duration=1e-10
@@ -75,3 +82,9 @@ def get_total_audio_duration(audio_path:Union[str,Path,List[str]],format:str="wa
     audio_file_duration['min_duration']=min_duration
     audio_file_duration['total_duration']=total_duration
     return audio_file_duration
+
+
+def convert_audio_format(src,dst,format="wav"):
+    sound = AudioSegment.from_mp3(str(src))
+    file_path=Path(dst)/f"{src.stem}.{format}"
+    sound.export(file_path, format="wav")
