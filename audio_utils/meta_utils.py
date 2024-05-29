@@ -1,4 +1,4 @@
-from utils.file_utils import load_json
+from audio_utils.file_utils import load_json
 from collections import OrderedDict
 from copy import deepcopy
 from typing import Dict

@@ -1,7 +1,7 @@
 from typing import Tuple
 import re
-from utils.file_utils import save_json,load_json
-from utils.audio_utils import get_audio_info
+from audio_utils.file_utils import save_json,load_json
+from audio_utils.audio_utils import get_audio_info
 from collections import Counter
 from tqdm import tqdm
 import json

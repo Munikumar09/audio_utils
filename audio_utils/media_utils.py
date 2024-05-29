@@ -1,7 +1,6 @@
 import os
-from pydub import AudioSegment
 import moviepy.editor as mp
-import json
+
 
 def video_to_audio(input_path:str,out_path:str,format:str):
     audio_file_name=input_path.split("/")[-1]
